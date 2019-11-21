@@ -75,6 +75,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;uxtheme.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -114,7 +116,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="BigInteger\BigInteger.cc" />
+    <ClCompile Include="BigInteger\BigIntegerAlgorithms.cc" />
+    <ClCompile Include="BigInteger\BigIntegerUtils.cc" />
+    <ClCompile Include="BigInteger\BigUnsigned.cc" />
+    <ClCompile Include="BigInteger\BigUnsignedInABase.cc" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="RSA.cpp" />
+    <ClCompile Include="RSA_realize.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BigInteger\BigInteger.hh" />
+    <ClInclude Include="BigInteger\BigIntegerAlgorithms.hh" />
+    <ClInclude Include="BigInteger\BigIntegerLibrary.hh" />
+    <ClInclude Include="BigInteger\BigIntegerUtils.hh" />
+    <ClInclude Include="BigInteger\BigUnsigned.hh" />
+    <ClInclude Include="BigInteger\BigUnsignedInABase.hh" />
+    <ClInclude Include="BigInteger\NumberlikeArray.hh" />
+    <ClInclude Include="IOCommon.h" />
+    <ClInclude Include="PrivateKey.h" />
+    <ClInclude Include="PublicKey.h" />
+    <ClInclude Include="RSA.h" />
+    <ClInclude Include="RSA_realize.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BigInteger\ChangeLog" />
+    <None Include="BigInteger\Makefile" />
+    <None Include="BigInteger\run-testsuite" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

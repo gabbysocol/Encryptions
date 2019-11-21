@@ -1,17 +1,22 @@
 #include <windows.h> 
 #include <commctrl.h>
 #include <Uxtheme.h>
-
 #include "commdlg.h"
 #include "stdlib.h"
 #include "vector"
 #include "string"
-#include "fstream"
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <streambuf>
+
+#include "RSA_realize.h"
 #pragma comment (lib, "comctl32.lib")
 
 #define MAX_LOADSTRING 100
 #define ID_BUTTON 101
 #define ID_EDIT 102
+#define _CRT_SECURE_NO_WARNINGS
 
 #define ID_TOOLBAR 100
 #define CM_FILE_NEW 1000   // Команда Создать.
@@ -30,38 +35,34 @@ HINSTANCE hInst;                                // текущий экземпляр
 
 BOOL RegClass(WNDPROC, LPCTSTR, UINT);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-BOOL OpenFile();
+std::string read_file(std::string filename);
 
 HINSTANCE hInstance;
 TCHAR szClass[] = TEXT("MenuAndToolBarClass");
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int nCmdShow)
-{
+
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int nCmdShow) {
 	MSG msg;
 	HWND hWnd;
 	hInstance = hInst;
 
-	if (!RegClass(WndProc, szClass, COLOR_WINDOW)) 
-		return FALSE;
+	if (!RegClass(WndProc, szClass, COLOR_WINDOW)) return FALSE;
 	hWnd = CreateWindow(szClass, TEXT("CoDec"), 
 			WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 
 			CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, NULL);
 
-	if (!hWnd) 
-		return FALSE;
+	if (!hWnd) return FALSE;
 	SetWindowTheme(hWnd, L" ", L" "); // ADD THIS
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
-	while (GetMessage(&msg, 0, 0, 0))
-	{
+	while (GetMessage(&msg, 0, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 	return msg.wParam;
 }
 
-BOOL RegClass(WNDPROC Proc, LPCTSTR szName, UINT brBackground)
-{
+BOOL RegClass(WNDPROC Proc, LPCTSTR szName, UINT brBackground) {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.cbClsExtra = 0;
@@ -77,8 +78,7 @@ BOOL RegClass(WNDPROC Proc, LPCTSTR szName, UINT brBackground)
 	return (RegisterClass(&wc) != 0);
 }
 
-BOOL CreateMenuItem(HMENU hMenu, TCHAR *str, UINT uIns, UINT uCom, HMENU hSubMenu, BOOL flag, UINT fType)
-{
+BOOL CreateMenuItem(HMENU hMenu, TCHAR *str, UINT uIns, UINT uCom, HMENU hSubMenu, BOOL flag, UINT fType) {
 	MENUITEMINFO mii;
 
 	mii.cbSize = sizeof(MENUITEMINFO);
@@ -93,8 +93,7 @@ BOOL CreateMenuItem(HMENU hMenu, TCHAR *str, UINT uIns, UINT uCom, HMENU hSubMen
 	return InsertMenuItem(hMenu, uIns, flag, &mii);
 }
 
-HWND CreateToolBar(HWND hWnd, DWORD dwStyle, UINT uCom)
-{
+HWND CreateToolBar(HWND hWnd, DWORD dwStyle, UINT uCom) {
 	static TBBUTTON but[10];
 
 	but[0].fsStyle = TBSTYLE_SEP;
@@ -152,111 +151,91 @@ HWND CreateToolBar(HWND hWnd, DWORD dwStyle, UINT uCom)
 			but, 9, 0, 0, 0, 0, sizeof(TBBUTTON));
 }
 
-BOOL OpenFile(HWND hWnd)
-{
-	static HWND hEdit, hEdit1, hButton, hButton1, hListBox;
-	static TCHAR name[256] = ("");;
-	static OPENFILENAME file;
-	std::ifstream in;
-	std::ofstream out;
-	static std::vector<std::string> v;
-	std::vector<std::string>::iterator it;
-	std::string st;
+//std::string display_file(char* path) {
+//	FILE* file;
+//	file = fopen(path, "w+b");
+//
+//	std::ifstream input_stream(path, std::ios::in | std::ios::binary);
+//	std::string result;
+//
+//	while (true) {
+//		char ch;
+//		input_stream.get(ch);
+//
+//		if (input_stream.eof()) {
+//			return result;
+//		}
+//
+//		result = result + ch;
+//	}
+//
+	/*fseek(file, 0, SEEK_END);
+	int _size = ftell(file);
+	rewind(file);
+	char* data = new char(_size+1);
+	fread(data, _size, 1, file);
+	data[_size] = '\0';*/
+	////SetWindowText(hEdit, data)
+	//fclose(file);
+	//MessageBox(NULL, TEXT("Создать."), TEXT(""), MB_OK);
+//}
 
-	hEdit = CreateWindowEx(WS_EX_CLIENTEDGE, "edit", " ", WS_CHILD | WS_VISIBLE | ES_LEFT | ES_MULTILINE | WS_VSCROLL, 10, 40, 500, 200, hWnd, (HMENU)ID_EDIT, hInst, NULL);
-	hButton = CreateWindowEx(0, "button", "Открыть", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, 10, 250, 100, 30, hWnd, (HMENU)ID_BUTTON, NULL, 0);
-
-
-	file.lStructSize = sizeof(OPENFILENAME);
-	file.hInstance = hInst;
-	file.lpstrFilter = ("Text\0.*txt");
-	file.lpstrFile = name;
-	file.nMaxFile = 256;
-	file.lpstrInitialDir = (".\\");
-	file.lpstrDefExt = ("txt");
-	return true;
-}
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static HMENU hMainMenu, hPopUpFile, hPopUpEdit, hPopUpHelp;
 	static HWND hToolbar;
+	OPENFILENAME ofn;
 
-	switch (msg)
-	{
+	switch (msg) {
 	case WM_SIZE:
 		MoveWindow(hToolbar, 0, 0, 0, 0, TRUE);
 		return 0;
-	case WM_CREATE:
-	{		
-		// Меню Файл.
-		hPopUpFile = CreatePopupMenu();
-		int i = 0;
-		CreateMenuItem(hPopUpFile, TEXT("Create"), i++, CM_FILE_NEW, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpFile, TEXT("Open"), i++, CM_FILE_OPEN, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpFile, TEXT("Save"), i++, CM_FILE_SAVE, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpFile, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
-		CreateMenuItem(hPopUpFile, TEXT("Exit"), i++, CM_FILE_QUIT, NULL, FALSE, MFT_STRING);
-
-		// Меню Правка.
-		hPopUpEdit = CreatePopupMenu();
-		i = 0;
-		CreateMenuItem(hPopUpEdit, TEXT("Cut"), i++, CM_EDIT_CUT, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpEdit, TEXT("Copy"), i++, CM_EDIT_COPY, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpEdit, TEXT("Insert"), i++, CM_EDIT_PASTE, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpEdit, TEXT("Delete"), i++, CM_EDIT_DEL, NULL, FALSE, MFT_STRING);
-
-		// Меню Справка.
-		hPopUpHelp = CreatePopupMenu();
-		i = 0;
-		CreateMenuItem(hPopUpHelp, TEXT("Help"), i++, CM_HELP_HELP, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpHelp, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
-		CreateMenuItem(hPopUpHelp, TEXT("About"), i++, CM_HELP_ABOUT, NULL, FALSE, MFT_STRING);
-
-		i = 0;
-		CreateMenuItem(hMainMenu, TEXT("File"), i++, 0, hPopUpFile, FALSE, MFT_STRING);
-		CreateMenuItem(hMainMenu, TEXT("?"), i++, 0, hPopUpEdit, FALSE, MFT_STRING);
-		CreateMenuItem(hMainMenu, TEXT("Help"), i++, 0, hPopUpHelp, FALSE, MFT_STRING);
-
-		SetMenu(hWnd, hMainMenu);
-		DrawMenuBar(hWnd);
-		DWORD dwStyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | WS_DLGFRAME;
-		hToolbar = CreateToolBar(hWnd, dwStyle, ID_TOOLBAR);
-
-		return 0;
-	}
-	case WM_COMMAND:
-	{
-		switch (LOWORD(wParam))
-		{
-		case CM_FILE_NEW:
-			OpenFile(hWnd);
-			MessageBox(NULL, TEXT("Создать."), TEXT(""), MB_OK);
+		
+	case WM_COMMAND: {
+		switch (LOWORD(wParam)) {
+		case CM_FILE_NEW:		// code			
+			ofn = OpenUserFile(hWnd);
+			mainRSA(hWnd, ofn.lpstrFile);
 			return 0;
-		case CM_FILE_OPEN:
-			MessageBox(NULL, TEXT("Открыть."), TEXT(""), MB_OK);
+
+		case CM_FILE_OPEN:	// decrypto
+			//ofn = OpenFile(hWnd);
+			//display_file(ofn.lpstrFile);
+			//STB stb = STB(key, synchro);
+			//stb.decrypt_gamming();
+
+			MessageBox(NULL, TEXT("RSA"), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_FILE_SAVE:
 			MessageBox(NULL, TEXT("Сохранить."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_EDIT_CUT:
 			MessageBox(NULL, TEXT("Вырезать."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_EDIT_COPY:
 			MessageBox(NULL, TEXT("Копировать."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_EDIT_PASTE:
 			MessageBox(NULL, TEXT("Вставить."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_EDIT_DEL:
 			MessageBox(NULL, TEXT("Удалить."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_HELP_HELP:
 			MessageBox(NULL, TEXT("Справка."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_HELP_ABOUT:
 			MessageBox(NULL, TEXT("О программе."), TEXT(""), MB_OK);
 			return 0;
+
 		case CM_FILE_QUIT:
 			DestroyWindow(hWnd);
 			return 0;
@@ -266,5 +245,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 	};
+
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }

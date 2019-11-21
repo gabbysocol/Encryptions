@@ -15,8 +15,78 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp">
+    <ClCompile Include="RSA.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
+    <ClCompile Include="RSA_realize.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="BigInteger\BigInteger.cc">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="BigInteger\BigIntegerAlgorithms.cc">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="BigInteger\BigIntegerUtils.cc">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="BigInteger\BigUnsigned.cc">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+    <ClCompile Include="BigInteger\BigUnsignedInABase.cc">
+      <Filter>Файлы заголовков</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IOCommon.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="RSA.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="PublicKey.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="PrivateKey.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="RSA_realize.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\BigInteger.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\BigIntegerAlgorithms.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\BigIntegerLibrary.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\BigIntegerUtils.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\BigUnsigned.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\BigUnsignedInABase.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInteger\NumberlikeArray.hh">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BigInteger\ChangeLog">
+      <Filter>Файлы заголовков</Filter>
+    </None>
+    <None Include="BigInteger\Makefile">
+      <Filter>Файлы заголовков</Filter>
+    </None>
+    <None Include="BigInteger\run-testsuite">
+      <Filter>Файлы заголовков</Filter>
+    </None>
   </ItemGroup>
 </Project>
