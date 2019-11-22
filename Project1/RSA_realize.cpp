@@ -12,10 +12,12 @@
 #include "RSA_realize.h"
 #include "IOCommon.h"
 
-OPENFILENAME OpenUserFile(HWND hWnd) {
+std::string OpenUserFile(HWND hWnd) {
 	OPENFILENAME ofn;       // common dialog box structure
-	char szFile[260];       // buffer for file name
+	char szFile[150];       // buffer for file name
 	HANDLE hf;              // file handle
+	wchar_t file_path[150];
+	//std::string strr;
 
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
@@ -25,13 +27,19 @@ OPENFILENAME OpenUserFile(HWND hWnd) {
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.lpstrFilter = "All files\0*.*\0Text\0*.TXT\0";
 	ofn.nFilterIndex = 1;
-
+	
+	//std::string flname = GetOpenFileName(&ofn);
 	// Display the Open dialog box. 
-	if (GetOpenFileName(&ofn) == TRUE)
+	if (GetOpenFileName(&ofn) == TRUE) {
 		hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, (LPSECURITY_ATTRIBUTES)NULL,
 			OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE)NULL);
-
-	return ofn;
+		mbstowcs(file_path, szFile, 150);
+		std::wstring ws(file_path);
+		// your new String
+		std::string strr(ws.begin(), ws.end());
+		return strr;
+	}
+	return FALSE;
 }
 
 BigUnsigned convert_bytes_to_big_unsigned(std::string block) {
@@ -40,10 +48,9 @@ BigUnsigned convert_bytes_to_big_unsigned(std::string block) {
 	for (int i = 0; i < block.length(); ++i) {
 		result = (result << 8);
 
-		BigUnsigned ch = block[i];
+		BigUnsigned ch = static_cast<unsigned char>(block[i]);
 		result = result | ch;
 	}
-
 	return result;
 }
 
@@ -89,7 +96,7 @@ std::vector<BigUnsigned> get_big_unsigned_numbers(std::string encrypted_message)
 
 void encrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	unsigned int block_size = rsa.get_block_size();
-	OPENFILENAME ofn;
+	std::string ofn;
 	std::string message = read_secret_file(fileName);
 	std::string encrypted_message = "";
 
@@ -108,17 +115,16 @@ void encrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	}
 
 	ofn = OpenUserFile(hWnd);
-	write_to_encrypted_file(hWnd, encrypted_message, ofn.lpstrFile);
+	write_to_encrypted_file(hWnd, encrypted_message, ofn);
 	//CloseHandle(ofn);;
 }
 
 
 void decrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	unsigned int block_size = rsa.get_block_size();
-	OPENFILENAME ofn;
+	std::string ofn;
 	std::string encrypted_message = read_encrypted_file(fileName);
 	std::vector<BigUnsigned> blocks = get_big_unsigned_numbers(encrypted_message);
-
 	std::string decrypted_message = "";
 
 	for (int i = 0; i < blocks.size(); ++i) {
@@ -129,7 +135,7 @@ void decrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	}
 
 	ofn = OpenUserFile(hWnd);
-	write_to_decrypted_file(hWnd, decrypted_message, ofn.lpstrFile);
+	write_to_decrypted_file(hWnd, decrypted_message, ofn);
 }
 
 // RSA-155 (512 bits)

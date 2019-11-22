@@ -3,10 +3,24 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
+#include <cstring>
 
 std::string read_file(std::string filename) {
-	std::ifstream input_stream(filename, std::ios::in | std::ios::binary);
+	size_t index = 0;
+	while (true) {
+		/* Locate the substring to replace. */
+		index = filename.find("\\", index);
+		if (index == std::string::npos) break;
 
+		/* Make the replacement. */
+		filename.replace(index, 1, "/");
+
+		/* Advance index forward so the next iteration doesn't pick it up as well. */
+		index += 1;
+	}
+
+	std::string filename1 = "D:\\progr/deletee/Project1/new.txt";
+	std::ifstream input_stream(filename1, std::ios::in | std::ios::binary);
 	std::string result;
 
 	while (true) {

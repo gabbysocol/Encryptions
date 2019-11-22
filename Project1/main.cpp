@@ -151,59 +151,67 @@ HWND CreateToolBar(HWND hWnd, DWORD dwStyle, UINT uCom) {
 			but, 9, 0, 0, 0, 0, sizeof(TBBUTTON));
 }
 
-//std::string display_file(char* path) {
-//	FILE* file;
-//	file = fopen(path, "w+b");
-//
-//	std::ifstream input_stream(path, std::ios::in | std::ios::binary);
-//	std::string result;
-//
-//	while (true) {
-//		char ch;
-//		input_stream.get(ch);
-//
-//		if (input_stream.eof()) {
-//			return result;
-//		}
-//
-//		result = result + ch;
-//	}
-//
-	/*fseek(file, 0, SEEK_END);
-	int _size = ftell(file);
-	rewind(file);
-	char* data = new char(_size+1);
-	fread(data, _size, 1, file);
-	data[_size] = '\0';*/
-	////SetWindowText(hEdit, data)
-	//fclose(file);
-	//MessageBox(NULL, TEXT("Создать."), TEXT(""), MB_OK);
-//}
-
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static HMENU hMainMenu, hPopUpFile, hPopUpEdit, hPopUpHelp;
 	static HWND hToolbar;
-	OPENFILENAME ofn;
+	std::string ofn;
 
 	switch (msg) {
 	case WM_SIZE:
 		MoveWindow(hToolbar, 0, 0, 0, 0, TRUE);
 		return 0;
-		
+	
+	case WM_CREATE:
+	{
+		hMainMenu = CreateMenu();
+
+		// Меню Файл.
+		hPopUpFile = CreatePopupMenu();
+		int i = 0;
+		CreateMenuItem(hPopUpFile, TEXT("Создать"), i++, CM_FILE_NEW, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpFile, TEXT("Oткрыть"), i++, CM_FILE_OPEN, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpFile, TEXT("Coxpaнить"), i++, CM_FILE_SAVE, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpFile, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
+		CreateMenuItem(hPopUpFile, TEXT("Выход"), i++, CM_FILE_QUIT, NULL, FALSE, MFT_STRING);
+
+		// Меню Правка.
+		hPopUpEdit = CreatePopupMenu();
+		i = 0;
+		CreateMenuItem(hPopUpEdit, TEXT("Bырезать"), i++, CM_EDIT_CUT, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpEdit, TEXT("Копировать"), i++, CM_EDIT_COPY, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpEdit, TEXT("Вставить"), i++, CM_EDIT_PASTE, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpEdit, TEXT("Удалить"), i++, CM_EDIT_DEL, NULL, FALSE, MFT_STRING);
+
+		// Меню Справка.
+		hPopUpHelp = CreatePopupMenu();
+		i = 0;
+		CreateMenuItem(hPopUpHelp, TEXT("Справка"), i++, CM_HELP_HELP, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpHelp, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
+		CreateMenuItem(hPopUpHelp, TEXT("О программе"), i++, CM_HELP_ABOUT, NULL, FALSE, MFT_STRING);
+
+		i = 0;
+		CreateMenuItem(hMainMenu, TEXT("Файл"), i++, 0, hPopUpFile, FALSE, MFT_STRING);
+		CreateMenuItem(hMainMenu, TEXT("Правка"), i++, 0, hPopUpEdit, FALSE, MFT_STRING);
+		CreateMenuItem(hMainMenu, TEXT("Помощь"), i++, 0, hPopUpHelp, FALSE, MFT_STRING);
+
+		SetMenu(hWnd, hMainMenu);
+		DrawMenuBar(hWnd);
+		DWORD dwStyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | WS_DLGFRAME;
+		hToolbar = CreateToolBar(hWnd, dwStyle, ID_TOOLBAR);
+
+		return 0;
+	}
+
 	case WM_COMMAND: {
 		switch (LOWORD(wParam)) {
 		case CM_FILE_NEW:		// code			
-			ofn = OpenUserFile(hWnd);
-			mainRSA(hWnd, ofn.lpstrFile);
+			ofn = OpenUserFile(hWnd);			
+			mainRSA(hWnd, ofn);
 			return 0;
 
 		case CM_FILE_OPEN:	// decrypto
-			//ofn = OpenFile(hWnd);
-			//display_file(ofn.lpstrFile);
-			//STB stb = STB(key, synchro);
-			//stb.decrypt_gamming();
 
 			MessageBox(NULL, TEXT("RSA"), TEXT(""), MB_OK);
 			return 0;

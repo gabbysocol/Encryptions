@@ -12,7 +12,7 @@
 
 #include "RSA.h"
 
-OPENFILENAME OpenUserFile(HWND hWnd);
+std::string OpenUserFile(HWND hWnd);
 BigUnsigned convert_bytes_to_big_unsigned(std::string block);
 
 std::string convert_big_unsigned_to_bytes(BigUnsigned block);
