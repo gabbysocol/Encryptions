@@ -101,7 +101,7 @@ void encrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	std::string message = read_secret_file(fileName);
 	std::string encrypted_message = "";
 
-	unsigned int blocks_number = message.length() % block_size /* Çהוסü בûכמ 8 */ == 0
+	unsigned int blocks_number = message.length() % block_size /* here was 8 */ == 0
 		? message.length() / block_size
 		: message.length() / block_size + 1;
 
@@ -117,7 +117,6 @@ void encrypt(HWND hWnd, RSA rsa, std::string fileName) {
 
 	ofn = OpenUserFile(hWnd);
 	write_to_encrypted_file(hWnd, ofn, encrypted_message);
-	//CloseHandle(ofn);;
 }
 
 
@@ -136,16 +135,13 @@ void decrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	}
 
 	ofn = OpenUserFile(hWnd);
-	write_to_decrypted_file(hWnd, decrypted_message, ofn);
+	write_to_decrypted_file(hWnd, ofn, decrypted_message);
 }
 
 // RSA-155 (512 bits)
 const std::string RSA_512_P = "102639592829741105772054196573991675900716567808038066803341933521790711307779";
 const std::string RSA_512_Q = "106603488380168454820927220360012878679207958575989291522270608237193062808643";
 
-
-//const bool ENCRYPT = true;
-//const bool DECRYPT = true;
 
 int mainRSA(HWND hWnd, std::string fileName, bool ENCRYPT) {
 	BigUnsigned p = stringToBigUnsigned(RSA_512_P); // 169691;

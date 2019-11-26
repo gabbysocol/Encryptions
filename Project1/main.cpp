@@ -209,11 +209,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case CM_FILE_NEW:		// code			
 			ofn = OpenUserFile(hWnd);			
 			mainRSA(hWnd, ofn, true);
+			MessageBox(NULL, TEXT("RSA code"), TEXT(""), MB_OK);
 			return 0;
-
 		case CM_FILE_OPEN:	// decrypto
-
-			MessageBox(NULL, TEXT("RSA"), TEXT(""), MB_OK);
+			ofn = OpenUserFile(hWnd);
+			mainRSA(hWnd, ofn, false);
+			MessageBox(NULL, TEXT("RSA decode"), TEXT(""), MB_OK);
 			return 0;
 
 		case CM_FILE_SAVE:
