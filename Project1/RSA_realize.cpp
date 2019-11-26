@@ -31,8 +31,9 @@ std::string OpenUserFile(HWND hWnd) {
 	//std::string flname = GetOpenFileName(&ofn);
 	// Display the Open dialog box. 
 	if (GetOpenFileName(&ofn) == TRUE) {
-		hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, (LPSECURITY_ATTRIBUTES)NULL,
+		/*hf = CreateFile(ofn.lpstrFile, GENERIC_READ, 0, (LPSECURITY_ATTRIBUTES)NULL,
 			OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, (HANDLE)NULL);
+			*/
 		mbstowcs(file_path, szFile, 150);
 		std::wstring ws(file_path);
 		// your new String
@@ -115,7 +116,7 @@ void encrypt(HWND hWnd, RSA rsa, std::string fileName) {
 	}
 
 	ofn = OpenUserFile(hWnd);
-	write_to_encrypted_file(hWnd, encrypted_message, ofn);
+	write_to_encrypted_file(hWnd, ofn, encrypted_message);
 	//CloseHandle(ofn);;
 }
 
@@ -143,10 +144,10 @@ const std::string RSA_512_P = "1026395928297411057720541965739916759007165678080
 const std::string RSA_512_Q = "106603488380168454820927220360012878679207958575989291522270608237193062808643";
 
 
-const bool ENCRYPT = true;
-const bool DECRYPT = true;
+//const bool ENCRYPT = true;
+//const bool DECRYPT = true;
 
-int mainRSA(HWND hWnd, std::string fileName) {
+int mainRSA(HWND hWnd, std::string fileName, bool ENCRYPT) {
 	BigUnsigned p = stringToBigUnsigned(RSA_512_P); // 169691;
 	BigUnsigned q = stringToBigUnsigned(RSA_512_Q); // 786431;
 
@@ -156,7 +157,7 @@ int mainRSA(HWND hWnd, std::string fileName) {
 		encrypt(hWnd, rsa, fileName);
 	}
 
-	if (DECRYPT) {
+	if (!ENCRYPT) {
 		decrypt(hWnd, rsa, fileName);
 	}
 	return 0;

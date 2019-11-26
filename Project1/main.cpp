@@ -208,7 +208,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case CM_FILE_NEW:		// code			
 			ofn = OpenUserFile(hWnd);			
-			mainRSA(hWnd, ofn);
+			mainRSA(hWnd, ofn, true);
 			return 0;
 
 		case CM_FILE_OPEN:	// decrypto

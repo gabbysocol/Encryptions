@@ -22,4 +22,4 @@ std::vector<BigUnsigned> get_big_unsigned_numbers(std::string encrypted_message)
 void encrypt(HWND hWnd, RSA rsa, std::string fileName);
 void decrypt(HWND hWnd, RSA rsa, std::string fileName);
 
-int mainRSA(HWND hWnd, std::string fileName);
+int mainRSA(HWND hWnd, std::string fileName, bool ENCRYPT);
