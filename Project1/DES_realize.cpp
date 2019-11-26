@@ -82,7 +82,7 @@ void encrypt(HWND hWnd, string fileName, DES des) {
 }
 
 
-void decrypt(HWND hWnd, string fileName, DES des) {
+void decrypt(HWND hWnd, string fileName, DES des) {	
 	string encrypted_message = read_encrypted_file(fileName);
 	string decrypted_message = "";
 	string ofn;
