@@ -11,6 +11,8 @@
 #include <streambuf>
 
 #include "RSA_realize.h"
+#include "DES_realize.h"
+#include "IOCommon.h"
 #pragma comment (lib, "comctl32.lib")
 
 #define MAX_LOADSTRING 100
@@ -30,8 +32,8 @@
 #define CM_HELP_HELP 3000  // Команда Справка.
 #define CM_HELP_ABOUT 3001 // Команда О программе.
 
-// Глобальные переменные:
-HINSTANCE hInst;                                // текущий экземпляр
+// global
+HINSTANCE hInst;                          
 
 BOOL RegClass(WNDPROC, LPCTSTR, UINT);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -156,7 +158,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static HMENU hMainMenu, hPopUpFile, hPopUpEdit, hPopUpHelp;
 	static HWND hToolbar;
-	std::string ofn;
 
 	switch (msg) {
 	case WM_SIZE:
@@ -206,30 +207,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND: {
 		switch (LOWORD(wParam)) {
-		case CM_FILE_NEW:		// code			
-			ofn = OpenUserFile(hWnd);			
-			mainRSA(hWnd, ofn, true);
+		case CM_FILE_NEW:		// code		RSA				
+			mainRSA(hWnd, true);
 			MessageBox(NULL, TEXT("RSA code"), TEXT(""), MB_OK);
 			return 0;
-		case CM_FILE_OPEN:	// decrypto
-			ofn = OpenUserFile(hWnd);
-			mainRSA(hWnd, ofn, false);
+		case CM_FILE_OPEN:	// decrypto RSA			
+			mainRSA(hWnd, false);
 			MessageBox(NULL, TEXT("RSA decode"), TEXT(""), MB_OK);
 			return 0;
 
-		case CM_FILE_SAVE:
+		case CM_FILE_SAVE:		// code		DES
+			mainDES(hWnd, true);
 			MessageBox(NULL, TEXT("Сохранить."), TEXT(""), MB_OK);
 			return 0;
 
-		case CM_EDIT_CUT:
+		case CM_EDIT_CUT:		// decrypto		DES
+			mainDES(hWnd, false);
 			MessageBox(NULL, TEXT("Вырезать."), TEXT(""), MB_OK);
 			return 0;
 
-		case CM_EDIT_COPY:
+		case CM_EDIT_COPY:		// code		DES3
+			mainDES3(hWnd, true);
 			MessageBox(NULL, TEXT("Копировать."), TEXT(""), MB_OK);
 			return 0;
 
-		case CM_EDIT_PASTE:
+		case CM_EDIT_PASTE:		// decrypto		DES3
+			mainDES3(hWnd, false);
 			MessageBox(NULL, TEXT("Вставить."), TEXT(""), MB_OK);
 			return 0;
 

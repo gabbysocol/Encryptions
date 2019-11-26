@@ -10,16 +10,18 @@
 #include <string>
 #include <streambuf>
 
+#include "IOCommon.h"
 #include "RSA.h"
 
-std::string OpenUserFile(HWND hWnd);
-BigUnsigned convert_bytes_to_big_unsigned(std::string block);
+using namespace std;
 
-std::string convert_big_unsigned_to_bytes(BigUnsigned block);
-std::string get_block(std::string message, unsigned int i, BigUnsigned block_size);
-std::vector<BigUnsigned> get_big_unsigned_numbers(std::string encrypted_message);
+BigUnsigned convert_bytes_to_big_unsigned(string block);
 
-void encrypt(HWND hWnd, RSA rsa, std::string fileName);
-void decrypt(HWND hWnd, RSA rsa, std::string fileName);
+string convert_big_unsigned_to_bytes(BigUnsigned block);
+string get_block(string message, unsigned int i, BigUnsigned block_size);
+vector<BigUnsigned> get_big_unsigned_numbers(string encrypted_message);
 
-int mainRSA(HWND hWnd, std::string fileName, bool ENCRYPT);
+void encrypt(HWND hWnd, RSA rsa, string filename);
+void decrypt(HWND hWnd, RSA rsa, string filename);
+
+int mainRSA(HWND hWnd, bool ENCRYPT);

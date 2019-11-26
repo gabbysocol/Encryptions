@@ -63,8 +63,8 @@ RSA::RSA(BigUnsigned p, BigUnsigned q) {
 
 	BigUnsigned d = d_int.getMagnitude();
 
-	std::cout << "e: " << bigIntegerToString(e) << std::endl << "d: " << bigIntegerToString(d_int) << std::endl;
-	std::cout << "e * d % t = " << (e * d) % t << std::endl;
+	cout << "e: " << bigIntegerToString(e) << endl << "d: " << bigIntegerToString(d_int) << endl;
+	cout << "e * d % t = " << (e * d) % t << endl;
 
 	this->private_key = PrivateKey();
 	this->private_key.PQ = n;

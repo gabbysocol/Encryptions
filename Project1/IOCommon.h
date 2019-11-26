@@ -5,51 +5,18 @@
 #include <streambuf>
 #include <cstring>
 
-std::string read_file(std::string filename) {
-	size_t index = 0;
-	while (true) {
-		/* Locate the substring to replace. */
-		index = filename.find("\\", index);
-		if (index == std::string::npos) break;
-		filename.replace(index, 1, "/");
-		index += 1;
-	}
+using namespace std;
 
-	std::string filename1 = "D:\\progr/deletee/Project1/new.txt";
-	std::ifstream input_stream(filename, std::ios::in | std::ios::binary);
-	std::string result;
+string OpenUserFile(HWND hWnd);
 
-	while (true) {
-		char ch;
-		input_stream.get(ch);
+string read_file(string filename);
 
-		if (input_stream.eof()) {
-			return result;
-		}
+void write_to_file(HWND hWnd, string filename, string output);
 
-		result = result + ch;
-	}
-}
+string read_secret_file(string SECRET_FILE);
 
-void write_to_file(HWND hWnd, std::string filename, std::string output) {
-	std::ofstream output_stream;
-	output_stream.open(filename, std::ios::out | std::ios::binary);
-	output_stream << output;
-	output_stream.close();
-}
+void write_to_encrypted_file(HWND hWnd, string ENCRYPTED_FILE, string output);
 
-std::string read_secret_file(std::string SECRET_FILE){
-	return read_file(SECRET_FILE);
-}
+string read_encrypted_file(string ENCRYPTED_FILE);
 
-void write_to_encrypted_file(HWND hWnd, std::string ENCRYPTED_FILE, std::string output) {
-	write_to_file(hWnd, ENCRYPTED_FILE, output);
-}
-
-std::string read_encrypted_file(std::string ENCRYPTED_FILE) {
-	return read_file(ENCRYPTED_FILE);
-}
-
-void write_to_decrypted_file(HWND hWnd, std::string DECRYPTED_FILE, std::string output) {
-	write_to_file(hWnd, DECRYPTED_FILE, output);
-}
+void write_to_decrypted_file(HWND hWnd, string DECRYPTED_FILE, string output);

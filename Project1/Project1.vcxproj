@@ -121,6 +121,11 @@
     <ClCompile Include="BigInteger\BigIntegerUtils.cc" />
     <ClCompile Include="BigInteger\BigUnsigned.cc" />
     <ClCompile Include="BigInteger\BigUnsignedInABase.cc" />
+    <ClCompile Include="des.cpp" />
+    <ClCompile Include="des3.cpp" />
+    <ClCompile Include="descbc.cpp" />
+    <ClCompile Include="DES_realize.cpp" />
+    <ClCompile Include="IOCommon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RSA.cpp" />
     <ClCompile Include="RSA_realize.cpp" />
@@ -133,6 +138,13 @@
     <ClInclude Include="BigInteger\BigUnsigned.hh" />
     <ClInclude Include="BigInteger\BigUnsignedInABase.hh" />
     <ClInclude Include="BigInteger\NumberlikeArray.hh" />
+    <ClInclude Include="des.h" />
+    <ClInclude Include="des3.h" />
+    <ClInclude Include="descbc.h" />
+    <ClInclude Include="des_data.h" />
+    <ClInclude Include="des_key.h" />
+    <ClInclude Include="des_lookup.h" />
+    <ClInclude Include="DES_realize.h" />
     <ClInclude Include="IOCommon.h" />
     <ClInclude Include="PrivateKey.h" />
     <ClInclude Include="PublicKey.h" />
