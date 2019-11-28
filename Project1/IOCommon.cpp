@@ -32,21 +32,22 @@ string OpenUserFile(HWND hWnd) {
 		string strr(ws.begin(), ws.end());
 		return strr;
 	}
-	return NULL;
+	MessageBox(NULL, TEXT("OOOOpss!U didn't choose file"), TEXT("Completed"), MB_OK);
+	return "bad";
 }
 
 string read_file(string filename) {
 	size_t index = 0;
 	while (true) {
-		/* Locate the substring to replace. */
 		index = filename.find("\\", index);
-		if (index == string::npos) break;
+		if (index == string::npos) 
+			break;
 		filename.replace(index, 1, "/");
 		index += 1;
 	}
 
 	string filename1 = "D:\\progr/deletee/Project1/new.txt";
-	ifstream input_stream(filename, ios::in | ios::binary);
+	ifstream input_stream(filename, ios::in | ios::binary | ios::ate);
 	string result;
 
 	while (true) {

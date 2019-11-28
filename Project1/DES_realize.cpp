@@ -65,8 +65,6 @@ void encrypt(HWND hWnd, string fileName, DES des) {
 	string encrypted_message = "";
 	string ofn;
 
-	//cout << message << endl << endl;
-
 	unsigned int blocks_count = get_blocks_count(message);
 
 	for (unsigned int i = 0; i < blocks_count; ++i) {
@@ -76,8 +74,9 @@ void encrypt(HWND hWnd, string fileName, DES des) {
 		encrypted_message += convert_ulong_to_bytes(encrypted_block);
 	}
 
-	//cout << encrypted_message << endl << endl;
 	ofn = OpenUserFile(hWnd);
+	if (ofn == "bad")
+		return;
 	write_to_encrypted_file(hWnd, ofn, encrypted_message);
 }
 
@@ -98,6 +97,8 @@ void decrypt(HWND hWnd, string fileName, DES des) {
 
 	//cout << decrypted_message << endl << endl;
 	ofn = OpenUserFile(hWnd);
+	if (ofn == "bad")
+		return;
 	write_to_decrypted_file(hWnd, ofn, decrypted_message);
 }
 
@@ -106,8 +107,6 @@ void encrypt(HWND hWnd, string fileName, DES3 des) {
 	string message = align(raw_message);
 	string encrypted_message = "";
 	string ofn;
-
-	//cout << message << endl << endl;
 
 	unsigned int blocks_count = get_blocks_count(message);
 
@@ -118,8 +117,9 @@ void encrypt(HWND hWnd, string fileName, DES3 des) {
 		encrypted_message += convert_ulong_to_bytes(encrypted_block);
 	}
 
-	//cout << encrypted_message << endl << endl;
 	ofn = OpenUserFile(hWnd);
+	if (ofn == "bad")
+		return;
 	write_to_encrypted_file(hWnd, ofn, encrypted_message);
 }
 
@@ -137,16 +137,15 @@ void decrypt(HWND hWnd, string fileName, DES3 des) {
 		decrypted_message += convert_ulong_to_bytes(decrypted_block);
 	}
 
-	//cout << decrypted_message << endl << endl;
 	ofn = OpenUserFile(hWnd);
+	if (ofn == "bad")
+		return;
 	write_to_decrypted_file(hWnd, ofn, decrypted_message);
 }
 
 const char* SECRET_KEY = "mysecretkey";
 const char* SECRET_KEY_DES2 = "12345678";
 const char* SECRET_KEY_DES3 = "32132352";
-
-//////////////////////////
 
 int mainDES3(HWND hWnd, bool ENCRYPT) {
 	unsigned long long key = convert_bytes_to_ulong(SECRET_KEY);
@@ -155,6 +154,8 @@ int mainDES3(HWND hWnd, bool ENCRYPT) {
 	string filename;
 
 	filename = OpenUserFile(hWnd);
+	if (filename == "bad")
+		return 1;
 	DES3 des3_encryptor(key, key2, key3);
 
 	if (ENCRYPT) {
@@ -172,10 +173,12 @@ int mainDES3(HWND hWnd, bool ENCRYPT) {
 
 int mainDES(HWND hWnd, bool ENCRYPT) {
 	unsigned long long key = convert_bytes_to_ulong(SECRET_KEY);
-	unsigned long long key2 = convert_bytes_to_ulong(SECRET_KEY_DES2);
-	unsigned long long key3 = convert_bytes_to_ulong(SECRET_KEY_DES3);
+
 	string filename;
 
+	filename = OpenUserFile(hWnd);
+	if (filename == "bad")
+		return 1;
 	filename = OpenUserFile(hWnd);
 	DES des_encryptor(key);
 

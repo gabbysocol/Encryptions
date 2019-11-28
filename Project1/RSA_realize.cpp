@@ -84,6 +84,8 @@ void encrypt(HWND hWnd, RSA rsa, string fileName) {
 		encrypted_message += " ";
 	}
 
+	if (ofn == "bad")
+		return;
 	ofn = OpenUserFile(hWnd);
 	write_to_encrypted_file(hWnd, ofn, encrypted_message);
 }
@@ -104,6 +106,8 @@ void decrypt(HWND hWnd, RSA rsa, string fileName) {
 	}
 
 	ofn = OpenUserFile(hWnd);
+	if (ofn == "bad")
+		return;
 	write_to_decrypted_file(hWnd, ofn, decrypted_message);
 }
 
@@ -118,6 +122,8 @@ int mainRSA(HWND hWnd, bool ENCRYPT) {
 	string filename;
 
 	filename = OpenUserFile(hWnd);
+	if (filename == "bad")
+		return 1;
 
 	auto rsa = RSA(p, q);
 

@@ -7,7 +7,6 @@
 #include "string"
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <streambuf>
 
 #include "RSA_realize.h"
@@ -15,45 +14,91 @@
 #include "IOCommon.h"
 #pragma comment (lib, "comctl32.lib")
 
-#define MAX_LOADSTRING 100
-#define ID_BUTTON 101
-#define ID_EDIT 102
-#define _CRT_SECURE_NO_WARNINGS
+using namespace std;
 
 #define ID_TOOLBAR 100
-#define CM_FILE_NEW 1000   // Команда Создать.
-#define CM_FILE_OPEN 1001  // Команда Открыть.
-#define CM_FILE_SAVE 1002  // Команда Сохранить.
-#define CM_FILE_QUIT 1003  // Команда Выход.
-#define CM_EDIT_CUT 2000   // Команда Вырезать.
-#define CM_EDIT_PASTE 2001 // Команда Вставить.
-#define CM_EDIT_COPY 2002  // Команда Копировать.
-#define CM_EDIT_DEL 2003   // Команда Удалить.
-#define CM_HELP_HELP 3000  // Команда Справка.
-#define CM_HELP_ABOUT 3001 // Команда О программе.
+#define FILE_CODE_RSA 10			// RSA CODE
+#define FILE_DECODE_RSA 20			// RSA DECODE
+#define FILE_CODE_DES 11			
+#define CM_FILE_QUIT 1000			//exit
+#define FILE_DECODE_DES 21			
+#define FILE_CODE_3DES 12			
+#define FILE_DECODE_3DES 22			
+#define CM_HELP_ABOUT 301			// About
+#define FBUTTON 2000
+#define MUZICOF 2001
+
+static int SCREEN_WIDTH = 820;
+static int SCREEN_HEIGHT = 400;
 
 // global
-HINSTANCE hInst;                          
+HINSTANCE hInst;    
+HWND hLabel;
 
 BOOL RegClass(WNDPROC, LPCTSTR, UINT);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-std::string read_file(std::string filename);
 
 HINSTANCE hInstance;
-TCHAR szClass[] = TEXT("MenuAndToolBarClass");
+TCHAR szClass[] = TEXT("MainClass");
+TCHAR lzClass[] = TEXT("BUTTON");
+int labelMain = 20; 
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int nCmdShow) {
 	MSG msg;
 	HWND hWnd;
 	hInstance = hInst;
 
-	if (!RegClass(WndProc, szClass, COLOR_WINDOW)) return FALSE;
-	hWnd = CreateWindow(szClass, TEXT("CoDec"), 
-			WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 
-			CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, NULL);
+	if (!RegClass(WndProc, szClass, COLOR_WINDOW)) {
+		MessageBox(NULL, TEXT("Error!!!"), TEXT("Exc"), MB_OK);
+		return FALSE;
+	}
 
-	if (!hWnd) return FALSE;
-	SetWindowTheme(hWnd, L" ", L" "); // ADD THIS
+	RECT screen_rect;
+	GetWindowRect(GetDesktopWindow(), &screen_rect);			// разрешение экрана
+
+	int x = (screen_rect.right - SCREEN_WIDTH) / 2;
+	int y = (screen_rect.bottom - SCREEN_HEIGHT) / 2;	
+
+	hWnd = CreateWindow(szClass, TEXT("CoDecer"), 
+			WS_OVERLAPPEDWINDOW | WS_VISIBLE, x, y, 
+		SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, hInstance, NULL);	
+
+	HWND btnRSAC = CreateWindow("BUTTON", TEXT("RSA code"),
+		WS_CHILD | WS_VISIBLE, 50, 200,
+		100, 30, hWnd, (HMENU)FILE_CODE_RSA, hInstance, NULL);
+
+	HWND btnRSAD = CreateWindow("BUTTON", TEXT("RSA decode"),
+		WS_CHILD | WS_VISIBLE, 170, 200,
+		100, 30, hWnd, (HMENU)FILE_DECODE_RSA, hInstance, NULL);
+
+	HWND btnDESC = CreateWindow("BUTTON", TEXT("DES code"),
+		WS_CHILD | WS_VISIBLE, 290, 200,
+		100, 30, hWnd, (HMENU)FILE_CODE_RSA, hInstance, NULL);
+
+	HWND btnDESD = CreateWindow("BUTTON", TEXT("DES decode"),
+		WS_CHILD | WS_VISIBLE, 410, 200,
+		100, 30, hWnd, (HMENU)FILE_DECODE_RSA, hInstance, NULL);
+
+	HWND btn3DESC = CreateWindow("BUTTON", TEXT("3DES code"),
+		WS_CHILD | WS_VISIBLE, 530, 200,
+		100, 30, hWnd, (HMENU)FILE_CODE_RSA, hInstance, NULL);
+
+	HWND btn3DESD = CreateWindow("BUTTON", TEXT("3DES decode"),
+		WS_CHILD | WS_VISIBLE, 650, 200,
+		100, 30, hWnd, (HMENU)FILE_DECODE_RSA, hInstance, NULL);
+
+	HWND btnExit = CreateWindow("BUTTON", TEXT("Exit"),
+		WS_CHILD | WS_VISIBLE, 350, 250,
+		100, 30, hWnd, (HMENU)CM_FILE_QUIT, hInstance, NULL);
+
+	hLabel = CreateWindow("static", "Text",
+		WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		200, 100, 400, 30, hWnd, (HMENU)labelMain,
+		(HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+	SetWindowText(hLabel, "There are some algorythm of encrypting: RSA, DES, 3DES");
+
+	if (!hWnd)
+		return FALSE;
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 
@@ -80,7 +125,8 @@ BOOL RegClass(WNDPROC Proc, LPCTSTR szName, UINT brBackground) {
 	return (RegisterClass(&wc) != 0);
 }
 
-BOOL CreateMenuItem(HMENU hMenu, TCHAR *str, UINT uIns, UINT uCom, HMENU hSubMenu, BOOL flag, UINT fType) {
+BOOL CreateMenuItem(HMENU hMenu, TCHAR *str, UINT uIns, 
+UINT uCom, HMENU hSubMenu, BOOL flag, UINT fType) {
 	MENUITEMINFO mii;
 
 	mii.cbSize = sizeof(MENUITEMINFO);
@@ -100,64 +146,52 @@ HWND CreateToolBar(HWND hWnd, DWORD dwStyle, UINT uCom) {
 
 	but[0].fsStyle = TBSTYLE_SEP;
 
-	// Кнопка Создать.
 	but[1].iBitmap = STD_FILENEW;
-	but[1].idCommand = CM_FILE_NEW;
+	but[1].idCommand = FILE_CODE_RSA;
 	but[1].fsState = TBSTATE_ENABLED;
 	but[1].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Открыть.
 	but[2].iBitmap = STD_FILEOPEN;
-	but[2].idCommand = CM_FILE_OPEN;
+	but[2].idCommand = FILE_DECODE_RSA;
 	but[2].fsState = TBSTATE_ENABLED;
 	but[2].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Сохранить.
-	but[3].iBitmap = STD_FILESAVE;
-	but[3].idCommand = CM_FILE_SAVE;
+	but[3].iBitmap = STD_FILENEW;
+	but[3].idCommand = FILE_CODE_DES;
 	but[3].fsState = TBSTATE_ENABLED;
 	but[3].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Вырезать.
-	but[4].iBitmap = STD_CUT;
-	but[4].idCommand = CM_EDIT_CUT;
+	but[4].iBitmap = STD_FILEOPEN;
+	but[4].idCommand = FILE_DECODE_DES;
 	but[4].fsState = TBSTATE_ENABLED;
 	but[4].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Копировать.
-	but[5].iBitmap = STD_COPY;
-	but[5].idCommand = CM_EDIT_COPY;
+	but[5].iBitmap = STD_FILENEW;
+	but[5].idCommand = FILE_CODE_3DES;
 	but[5].fsState = TBSTATE_ENABLED;
 	but[5].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Вставить.
-	but[6].iBitmap = STD_PASTE;
-	but[6].idCommand = CM_EDIT_PASTE;
+	but[6].iBitmap = STD_FILEOPEN;
+	but[6].idCommand = FILE_DECODE_3DES;
 	but[6].fsState = TBSTATE_ENABLED;
 	but[6].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Удалить.
 	but[7].iBitmap = STD_DELETE;
-	but[7].idCommand = CM_EDIT_DEL;
+	but[7].idCommand = CM_FILE_QUIT;
 	but[7].fsState = TBSTATE_ENABLED;
 	but[7].fsStyle = TBSTYLE_BUTTON;
 
-	// Кнопка Справка.
-	but[8].iBitmap = STD_HELP;
-	but[8].idCommand = CM_HELP_HELP;
-	but[8].fsState = TBSTATE_ENABLED;
-	but[8].fsStyle = TBSTYLE_BUTTON;
-
 	return CreateToolbarEx(hWnd, dwStyle, uCom, 0, 
 			HINST_COMMCTRL, IDB_STD_LARGE_COLOR, 
-			but, 9, 0, 0, 0, 0, sizeof(TBBUTTON));
+			but, 8, 0, 0, 0, 0, sizeof(TBBUTTON));
 }
-
+///////////////////////////////////////////////////////////////////////////
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	static HMENU hMainMenu, hPopUpFile, hPopUpEdit, hPopUpHelp;
+	static HMENU hMainMenu, hPopUpCode, hPopUpDecode, hPopUpHelp;
 	static HWND hToolbar;
+	int temp;
 
 	switch (msg) {
 	case WM_SIZE:
@@ -167,85 +201,88 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 	{
 		hMainMenu = CreateMenu();
-
-		// Меню Файл.
-		hPopUpFile = CreatePopupMenu();
+		// for file coding
+		hPopUpCode = CreatePopupMenu();
 		int i = 0;
-		CreateMenuItem(hPopUpFile, TEXT("Создать"), i++, CM_FILE_NEW, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpFile, TEXT("Oткрыть"), i++, CM_FILE_OPEN, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpFile, TEXT("Coxpaнить"), i++, CM_FILE_SAVE, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpFile, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
-		CreateMenuItem(hPopUpFile, TEXT("Выход"), i++, CM_FILE_QUIT, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpCode, TEXT("RSA"), i++, FILE_CODE_RSA, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpCode, TEXT("DES"), i++, FILE_CODE_DES, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpCode, TEXT("3 DES"), i++, FILE_CODE_3DES, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpCode, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
+		CreateMenuItem(hPopUpCode, TEXT("Exit1"), i++, CM_FILE_QUIT, NULL, FALSE, MFT_STRING);
 
-		// Меню Правка.
-		hPopUpEdit = CreatePopupMenu();
+		// for file decoding
+		hPopUpDecode = CreatePopupMenu();
 		i = 0;
-		CreateMenuItem(hPopUpEdit, TEXT("Bырезать"), i++, CM_EDIT_CUT, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpEdit, TEXT("Копировать"), i++, CM_EDIT_COPY, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpEdit, TEXT("Вставить"), i++, CM_EDIT_PASTE, NULL, FALSE, MFT_STRING);
-		CreateMenuItem(hPopUpEdit, TEXT("Удалить"), i++, CM_EDIT_DEL, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpDecode, TEXT("RSA"), i++, FILE_DECODE_RSA, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpDecode, TEXT("DES"), i++, FILE_DECODE_DES, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpDecode, TEXT("3DES"), i++, FILE_DECODE_3DES, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpDecode, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
+		CreateMenuItem(hPopUpDecode, TEXT("Exit2"), i++, CM_FILE_QUIT, NULL, FALSE, MFT_STRING);
 
-		// Меню Справка.
+		// help
 		hPopUpHelp = CreatePopupMenu();
 		i = 0;
-		CreateMenuItem(hPopUpHelp, TEXT("Справка"), i++, CM_HELP_HELP, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpHelp, TEXT("About"), i++, CM_HELP_ABOUT, NULL, FALSE, MFT_STRING);		
 		CreateMenuItem(hPopUpHelp, NULL, i++, 0, NULL, FALSE, MFT_SEPARATOR);
-		CreateMenuItem(hPopUpHelp, TEXT("О программе"), i++, CM_HELP_ABOUT, NULL, FALSE, MFT_STRING);
+		CreateMenuItem(hPopUpHelp, TEXT("Exit3"), i++, CM_FILE_QUIT, NULL, FALSE, MFT_STRING);		
 
 		i = 0;
-		CreateMenuItem(hMainMenu, TEXT("Файл"), i++, 0, hPopUpFile, FALSE, MFT_STRING);
-		CreateMenuItem(hMainMenu, TEXT("Правка"), i++, 0, hPopUpEdit, FALSE, MFT_STRING);
-		CreateMenuItem(hMainMenu, TEXT("Помощь"), i++, 0, hPopUpHelp, FALSE, MFT_STRING);
-
+		CreateMenuItem(hMainMenu, TEXT("Code File"), i++, 0, hPopUpCode, FALSE, MFT_STRING);
+		
+		CreateMenuItem(hMainMenu, TEXT("Decode File"), i++, 0, hPopUpDecode, FALSE, MFT_STRING);
+		CreateMenuItem(hMainMenu, TEXT("Help"), i++, 0, hPopUpHelp, FALSE, MFT_STRING);
+		
 		SetMenu(hWnd, hMainMenu);
 		DrawMenuBar(hWnd);
 		DWORD dwStyle = WS_CHILD | WS_VISIBLE | TBSTYLE_TOOLTIPS | WS_DLGFRAME;
 		hToolbar = CreateToolBar(hWnd, dwStyle, ID_TOOLBAR);
 
+		RECT screen_rect;
+		//TCHAR szClass[] = TEXT("MainClass");
+		
 		return 0;
 	}
 
 	case WM_COMMAND: {
 		switch (LOWORD(wParam)) {
-		case CM_FILE_NEW:		// code		RSA				
-			mainRSA(hWnd, true);
-			MessageBox(NULL, TEXT("RSA code"), TEXT(""), MB_OK);
+		case FILE_CODE_RSA:						// code		RSA				
+			temp = mainRSA(hWnd, true);
+			if (temp != 1)				
+				MessageBox(NULL, TEXT("RSA code"), TEXT("Completed"), MB_OK);
 			return 0;
-		case CM_FILE_OPEN:	// decrypto RSA			
-			mainRSA(hWnd, false);
-			MessageBox(NULL, TEXT("RSA decode"), TEXT(""), MB_OK);
-			return 0;
-
-		case CM_FILE_SAVE:		// code		DES
-			mainDES(hWnd, true);
-			MessageBox(NULL, TEXT("Сохранить."), TEXT(""), MB_OK);
+		case FILE_DECODE_RSA:
+			// decrypto RSA			
+			temp = mainRSA(hWnd, false);
+			if (temp != 1)
+				MessageBox(NULL, TEXT("RSA decode"), TEXT("Completed"), MB_OK);
 			return 0;
 
-		case CM_EDIT_CUT:		// decrypto		DES
-			mainDES(hWnd, false);
-			MessageBox(NULL, TEXT("Вырезать."), TEXT(""), MB_OK);
+		case FILE_CODE_DES:						// code		DES
+			temp = mainDES(hWnd, true);
+			if (temp != 1)
+				MessageBox(NULL, TEXT("DES code"), TEXT("Completed"), MB_OK);
 			return 0;
 
-		case CM_EDIT_COPY:		// code		DES3
-			mainDES3(hWnd, true);
-			MessageBox(NULL, TEXT("Копировать."), TEXT(""), MB_OK);
+		case FILE_DECODE_DES:					// decrypto		DES
+			temp = mainDES(hWnd, false);
+			if (temp != 1)
+				MessageBox(NULL, TEXT("DES decode"), TEXT("Completed"), MB_OK);
 			return 0;
 
-		case CM_EDIT_PASTE:		// decrypto		DES3
-			mainDES3(hWnd, false);
-			MessageBox(NULL, TEXT("Вставить."), TEXT(""), MB_OK);
+		case FILE_CODE_3DES:					// code		DES3
+			temp = mainDES3(hWnd, true);
+			if (temp != 1)
+				MessageBox(NULL, TEXT("3 DES code"), TEXT("Completed"), MB_OK);
 			return 0;
 
-		case CM_EDIT_DEL:
-			MessageBox(NULL, TEXT("Удалить."), TEXT(""), MB_OK);
-			return 0;
-
-		case CM_HELP_HELP:
-			MessageBox(NULL, TEXT("Справка."), TEXT(""), MB_OK);
+		case FILE_DECODE_3DES:					// decrypto		DES3
+			temp = mainDES3(hWnd, false);
+			if (temp != 1)
+				MessageBox(NULL, TEXT("3 DES decode"), TEXT("Completed"), MB_OK);
 			return 0;
 
 		case CM_HELP_ABOUT:
-			MessageBox(NULL, TEXT("О программе."), TEXT(""), MB_OK);
+			MessageBox(NULL, TEXT("Developer of program: Lizunova Iryna 751003. \n This program is designed to encrypt and decrypt files. \n To do this, select Encrypt/Decrypt and select a file from the directory."), TEXT("About"), MB_OK);
 			return 0;
 
 		case CM_FILE_QUIT:
