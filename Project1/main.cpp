@@ -13,6 +13,7 @@
 #include "DES_realize.h"
 #include "IOCommon.h"
 #pragma comment (lib, "comctl32.lib")
+#pragma comment (lib, "Winmm.lib")
 
 using namespace std;
 
@@ -26,7 +27,7 @@ using namespace std;
 #define FILE_DECODE_3DES 22			
 #define CM_HELP_ABOUT 301			// About
 #define FBUTTON 2000
-#define MUZICOF 2001
+#define MUSIC_OF 2001				// for muzic
 
 static int SCREEN_WIDTH = 820;
 static int SCREEN_HEIGHT = 400;
@@ -87,8 +88,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int 
 		WS_CHILD | WS_VISIBLE, 650, 200,
 		100, 30, hWnd, (HMENU)FILE_DECODE_RSA, hInstance, NULL);
 
-	HWND btnExit = CreateWindow("BUTTON", TEXT("Exit"),
+	HWND btnMusic = CreateWindow("BUTTON", TEXT("Music"),
 		WS_CHILD | WS_VISIBLE, 350, 250,
+		100, 30, hWnd, (HMENU)MUSIC_OF, hInstance, NULL);
+
+	HWND btnExit = CreateWindow("BUTTON", TEXT("Exit"),
+		WS_CHILD | WS_VISIBLE, 350, 300,
 		100, 30, hWnd, (HMENU)CM_FILE_QUIT, hInstance, NULL);
 
 	hLabel = CreateWindow("static", "Text",
@@ -126,7 +131,7 @@ BOOL RegClass(WNDPROC Proc, LPCTSTR szName, UINT brBackground) {
 }
 
 BOOL CreateMenuItem(HMENU hMenu, TCHAR *str, UINT uIns, 
-UINT uCom, HMENU hSubMenu, BOOL flag, UINT fType) {
+	UINT uCom, HMENU hSubMenu, BOOL flag, UINT fType) {
 	MENUITEMINFO mii;
 
 	mii.cbSize = sizeof(MENUITEMINFO);
@@ -239,12 +244,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		RECT screen_rect;
 		//TCHAR szClass[] = TEXT("MainClass");
-		
+		//PlaySound((LPCSTR)"thunder.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
 		return 0;
 	}
 
 	case WM_COMMAND: {
 		switch (LOWORD(wParam)) {
+		case MUSIC_OF:						// code		RSA				
+			PlaySound((LPCSTR)"thunder.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+			return 0;
 		case FILE_CODE_RSA:						// code		RSA				
 			temp = mainRSA(hWnd, true);
 			if (temp != 1)				
