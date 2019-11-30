@@ -31,6 +31,7 @@ using namespace std;
 
 static int SCREEN_WIDTH = 820;
 static int SCREEN_HEIGHT = 400;
+int state = 0;
 
 // global
 HINSTANCE hInst;    
@@ -43,6 +44,10 @@ HINSTANCE hInstance;
 TCHAR szClass[] = TEXT("MainClass");
 TCHAR lzClass[] = TEXT("BUTTON");
 int labelMain = 20; 
+PAINTSTRUCT ps;
+HDC hdcMem;
+HBITMAP hbmMem;
+
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpszCmdLine, int nCmdShow) {
 	MSG msg;
@@ -192,6 +197,22 @@ HWND CreateToolBar(HWND hWnd, DWORD dwStyle, UINT uCom) {
 }
 ///////////////////////////////////////////////////////////////////////////
 
+void paintMenu(HDC hDC)
+{
+	SetTextColor(hDC, 0x00ff00);
+	SetBkMode(hDC, TRANSPARENT);		//фоновый режим смешивания контекста заданного устройства
+	char playMusic[] = "Turn On music";
+	char knowText[] = "And smile";
+	HFONT hf = CreateFont(40, 0, 0,		// угол наклона
+		0, FW_REGULAR, 0, 0, 0, 0, 0, 0, 0, 0,
+		"Times New Roman");
+	HFONT hOldFont = (HFONT)SelectObject(hDC, hf);
+	TextOut(hDC, 310, 50, playMusic, strlen(playMusic));
+	TextOut(hDC, 330, 150, knowText, strlen(knowText));
+	SelectObject(hDC, hOldFont);
+	DeleteObject(hf);
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static HMENU hMainMenu, hPopUpCode, hPopUpDecode, hPopUpHelp;
@@ -202,6 +223,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		MoveWindow(hToolbar, 0, 0, 0, 0, TRUE);
 		return 0;
+
+	case WM_PAINT:
+	{
+		HDC hDC;
+		hDC = BeginPaint(hWnd, &ps);
+		hdcMem = CreateCompatibleDC(hDC);
+		hbmMem = CreateCompatibleBitmap(hDC, 650, 500);
+		SelectObject(hdcMem, hbmMem);
+		switch (state)
+		{
+			case 0:
+			{
+				paintMenu(hDC);
+				break;
+			}
+		}
+		BitBlt(hdcMem, 0, 0, 650, 600, hDC, 0, 0, SRCCOPY);
+		DeleteObject(hbmMem);
+		DeleteDC(hdcMem);
+		EndPaint(hWnd, &ps);
+		break;
+	}
 	
 	case WM_CREATE:
 	{

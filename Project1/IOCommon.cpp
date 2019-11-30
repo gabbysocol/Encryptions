@@ -46,7 +46,7 @@ string read_file(string filename) {
 		index += 1;
 	}
 
-	string filename1 = "D:\\progr/deletee/Project1/new.txt";
+	//string filename1 = "D:\\progr/deletee/Project1/new.txt";
 	ifstream input_stream(filename, ios::in | ios::binary | ios::ate);
 	string result;
 
